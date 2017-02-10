@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 
@@ -182,6 +183,12 @@ class DefaultSocialAccountAdapter(object):
             'first_name': user_field(user, 'first_name') or '',
             'last_name': user_field(user, 'last_name') or ''}
         return initial
+
+    def process_manual_signup(self, request, sociallogin):
+        request.session['socialaccount_sociallogin'] = sociallogin.serialize()
+        url = reverse('socialaccount_signup')
+        ret = HttpResponseRedirect(url)
+        return ret
 
     def deserialize_instance(self, model, data):
         return deserialize_instance(model, data)
